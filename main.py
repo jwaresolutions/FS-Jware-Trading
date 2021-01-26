@@ -1,4 +1,3 @@
-from fastapi import FastAPI
 import config as config
 import sqlite3
 from fastapi import FastAPI, Request, Form
@@ -19,7 +18,9 @@ def index(request: Request):
     stock_filter = request.query_params.get('filter', False)
 
     if stock_filter == 'new_intraday_highs':
-        pass
+        cursor.execute("""
+        SELECT id, symbol, name FROM stock ORDER by symbol
+        """)
     elif stock_filter == 'new_closing_highs':
         cursor.execute("""
         SELECT * FROM(
@@ -30,9 +31,18 @@ def index(request: Request):
         ) WHERE date = ?
         """, (current_date,))
     elif stock_filter == 'new_intraday_lows':
-        pass
+        cursor.execute("""
+        SELECT id, symbol, name FROM stock ORDER by symbol
+        """)
     elif stock_filter == 'new_closing_lows':
-        pass
+        cursor.execute("""
+        SELECT * FROM(
+            SELECT symbol, name stock_id, min(close), date 
+            FROM stock_price JOIN stock on stock.id = stock_price.stock_id
+            GROUP BY stock_id
+            ORDER BY symbol
+        ) WHERE date = ?
+        """, (current_date,))
     else:
         cursor.execute("""
         SELECT id, symbol, name FROM stock ORDER by symbol
@@ -52,7 +62,7 @@ def stock_detail(request: Request, symbol):
         SELECT * from strategy
     
     """)
-    strategy = cursor.fetchall()
+    strategys = cursor.fetchall()
 
     cursor.execute("""
         SELECT id, symbol, name FROM stock WHERE symbol = ?
@@ -67,7 +77,7 @@ def stock_detail(request: Request, symbol):
     prices = cursor.fetchall()
 
     return templates.TemplateResponse("stock_detail.html",
-                                      {"request": request, "stock": row, "bars": prices, "strategy": strategy})
+                                      {"request": request, "stock": row, "bars": prices, "strategys": strategys})
 
 
 @app.post("/apply_strategy")
@@ -80,8 +90,7 @@ def apply_strategy(strategy_id: int = Form(...), stock_id: int = Form(...)):
     """, (stock_id, strategy_id))
 
     connection.commit()
-
-    return RedirectResponse(url=f"/stratagy/{strategy_id}", status_code=303)
+    return RedirectResponse(url=f"/strategy/{strategy_id}", status_code=303)
 
 
 @app.get("/strategy/{strategy_id}")

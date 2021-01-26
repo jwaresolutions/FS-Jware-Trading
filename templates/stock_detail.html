@@ -1,37 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>
-    <a href="/">Home </a>
-    <i class="angle double right icon"></i>
-    {{ stock.name }} </br>
-    {{ stock.symbol }} </br>
 
-    <!-- TradingView Widget BEGIN -->
-    <div class="tradingview-widget-container">
-        <div id="tradingview_8dfc6"></div>
-        <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/"
-                                                     rel="noopener" target="_blank"><span
-                class="blue-text">AAPL Chart</span></a> by TradingView
-        </div>
-        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-        <script type="text/javascript">
-            </h1>
-            <!--
-            source
-            for widget is
-            https://www.tradingview.com/widget/advanced-chart/ -->
+<a href="/">Home </a>
+<i class="angle double right icon"></i>
+{{ stock.name }} <br>
+{{ stock.symbol }} <br>
 
-                <!--
-            source
-            for widget is
-            https://www.tradingview.com/widget/advanced-chart/ TradingView Widget BEGIN -->
+            <!-- source for widget is https://www.tradingview.com/widget/advanced-chart/ -->
                 <div class="tradingview-widget-container">
                     <div id="tradingview_3f526"></div>
-                    <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/"
-                                                                 rel="noopener" target="_blank"><span
-                        class="blue-text">AAPL Chart</span></a> by TradingView
-                    </div>
                     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
         <script type="text/javascript">
 
@@ -60,15 +38,24 @@
         </script>
     </div>
     <!-- TradingView Widget END -->
-    <form method="post">
+
+
+{% for strategy in strategys %}
+{{ strategy.id }} {{ strategy.name }} <br>
+{% endfor %} <p>
+<form method="post" action="/apply_strategy">
+    <label>
         <select name="strategy_id">
-            {% for s in strategy %}
-            <option value="{{ s.id }}">{{ s.name }}</option>
+            {% for strategy in strategys %}
+            <option value="{{ strategy.id }}">{{ strategy.name }}</option>
             {% endfor %}
         </select>
-        <input type="text" name="stock_id" value="{{ stock.id }}" />
-        <input type="submit" value="Apply strategy" />
-    </form>
+    </label>
+    <label>
+        <input type="hidden" name="stock_id" value="{{ stock.id }}"/>
+    </label>
+    <input type="submit" value="Apply strategy"/>
+</form>
 
 <table class="ui selectable inverted table">
     <thead>
