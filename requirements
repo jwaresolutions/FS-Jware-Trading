@@ -3,10 +3,8 @@ certifi
 chardet
 click
 fastapi
-h11
 idna
 Jinja2
-lxml
 MarkupSafe
 multitasking
 numpy
@@ -17,7 +15,6 @@ python-multipart
 pytz
 requests
 six
-starlette
 urllib3
 uvicorn
 websocket-client
