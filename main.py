@@ -28,8 +28,8 @@ def index(request: Request):
             FROM stock_price JOIN stock on stock.id = stock_price.stock_id
             GROUP BY stock_id
             ORDER BY symbol
-        ) WHERE date = ?
-        """, (current_date,))
+        ) WHERE date = (select max(date) from stock_price) 
+        """)
     elif stock_filter == 'new_intraday_lows':
         cursor.execute("""
         SELECT id, symbol, name FROM stock ORDER by symbol
@@ -41,8 +41,8 @@ def index(request: Request):
             FROM stock_price JOIN stock on stock.id = stock_price.stock_id
             GROUP BY stock_id
             ORDER BY symbol
-        ) WHERE date = ?
-        """, (current_date,))
+        ) WHERE date = (select max(date) from stock_price) 
+        """)
     else:
         cursor.execute("""
         SELECT id, symbol, name FROM stock ORDER by symbol
