@@ -6,7 +6,7 @@ import alpaca_trade_api as tradeapi
 import alpaca_connect as ai
 
 
-class OpeningRangeBreakOutDown:
+class OpeningRangeBreakOutDownClass:
     def __init__(self):
         self.api = tradeapi.REST(self.API_KEY, self.SECRET_KEY, base_url=self.API_URL)
         self.alpaca_connect = ai.Alpaca_Connect()

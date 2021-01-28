@@ -1,2 +1,2 @@
 import strategies.openingrangebreakoutdown as OpeningRangeBreakOutDown
-breakout_strategies = OpeningRangeBreakOutDown
+breakout_strategies = OpeningRangeBreakOutDown.OpeningRangeBreakOutDownClass()
