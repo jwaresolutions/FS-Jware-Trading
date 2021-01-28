@@ -1,10 +1,12 @@
-import sqlite3, smtplib, ssl
-import alpaca_trade_api as tradeapi
+import smtplib
+import sqlite3
+import ssl
 from datetime import date
+import alpaca_trade_api as tradeapi
 import alpaca_connect as ai
 
 
-class Opening_range_break_out_down:
+class OpeningRangeBreakOutDown:
     def __init__(self):
         self.api = tradeapi.REST(self.API_KEY, self.SECRET_KEY, base_url=self.API_URL)
         self.alpaca_connect = ai.Alpaca_Connect()
@@ -135,4 +137,3 @@ class Opening_range_break_out_down:
                     self.new_order(limit_price, profit_at, stop_loss_at)
                 else:
                     print(f'Order for {symbol} already exists, current list of orders {existing_order_symbols}')
-

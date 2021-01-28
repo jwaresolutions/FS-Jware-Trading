@@ -1,2 +1,2 @@
-import opening_range_break_out_down
-breakout_strategies = opening_range_break_out_down()
+import strategies.openingrangebreakoutdown as OpeningRangeBreakOutDown
+breakout_strategies = OpeningRangeBreakOutDown
