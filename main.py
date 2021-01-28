@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from datetime import date
-
+import DB.views as views
 current_date = date.today().isoformat()
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -39,6 +39,8 @@ def index(request: Request):
         cursor.execute("""
         SELECT id, symbol, name as stock_id FROM stock ORDER by symbol
         """)
+
+
 
     rows = cursor.fetchall()
     return templates.TemplateResponse("index.html", {"request": request, "stocks": rows})
