@@ -61,19 +61,17 @@ class Opening_range_break_out_down:
                 server.sendmail(self.alpaca_connect.email_address, self.alpaca_connect.email_sms, email_message)
 
     def new_order(self, limit_price, profit_at, stop_loss_at):
-        print('ordering...')
-        # self.api.submit_order(
-        #     symbol=self.symbol,
-        #     side=self.side,
-        #     type='limit',
-        #     qty='1',
-        #     time_in_force='day',
-        #     order_class='bracket',
-        #     limit_price=limit_price,
-        #     take_profit=profit_at,
-        #     stop_loss=stop_loss_at
-        # )
-
+        self.api.submit_order(
+            symbol=self.symbol,
+            side=self.side,
+            type='limit',
+            qty='1',
+            time_in_force='day',
+            order_class='bracket',
+            limit_price=limit_price,
+            take_profit=profit_at,
+            stop_loss=stop_loss_at
+        )
 
     def strategy(self):
         orders = self.api.list_orders(status='all', after=f"{self.current_date}T13:30:00Z")
@@ -143,4 +141,3 @@ class Opening_range_break_out_down:
                     self.new_order(limit_price, profit_at, stop_loss_at)
                 else:
                     print(f'Order for {symbol} already exists, current list of orders {existing_order_symbols}')
-

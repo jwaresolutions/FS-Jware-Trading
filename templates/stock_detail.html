@@ -40,9 +40,6 @@
     <!-- TradingView Widget END -->
 
 
-{% for strategy in strategys %}
-{{ strategy.id }} {{ strategy.name }} <br>
-{% endfor %} <p>
 <form method="post" action="/apply_strategy">
     <label>
         <select name="strategy_id">

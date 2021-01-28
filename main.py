@@ -17,11 +17,7 @@ def index(request: Request):
     cursor = connection.cursor()
     stock_filter = request.query_params.get('filter', False)
 
-    if stock_filter == 'new_intraday_highs':
-        cursor.execute("""
-        SELECT id, symbol, name FROM stock ORDER by symbol
-        """)
-    elif stock_filter == 'new_closing_highs':
+    if stock_filter == 'new_closing_highs':
         cursor.execute("""
         SELECT * FROM(
             SELECT symbol, name stock_id, max(close), date 
@@ -29,10 +25,6 @@ def index(request: Request):
             GROUP BY stock_id
             ORDER BY symbol
         ) WHERE date = (select max(date) from stock_price) 
-        """)
-    elif stock_filter == 'new_intraday_lows':
-        cursor.execute("""
-        SELECT id, symbol, name FROM stock ORDER by symbol
         """)
     elif stock_filter == 'new_closing_lows':
         cursor.execute("""
@@ -45,7 +37,7 @@ def index(request: Request):
         """)
     else:
         cursor.execute("""
-        SELECT id, symbol, name FROM stock ORDER by symbol
+        SELECT id, symbol, name as stock_id FROM stock ORDER by symbol
         """)
 
     rows = cursor.fetchall()

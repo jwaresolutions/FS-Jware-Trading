@@ -1,24 +1,28 @@
 {% extends "layout.html" %}
 {% block content %}
-
+<a name="top"></a>
 <h1 xmlns="http://www.w3.org/1999/html">Stock List</h1>
 <form method="get">
     <select name="filter">
-    <option value="">All Stocks</option>
-    <option {% if request.query_params.filter == 'new_intraday_highs' %}selected = "selected" {% endif %} value="new_intraday_highs">New Intraday Highs</option>
-    <option {% if request.query_params.filter == 'new_closing_highs' %}selected = "selected" {% endif %} value="new_closing_highs">New Closing Highs</option>
-    <option {% if request.query_params.filter == 'new_intraday_lows' %}selected = "selected" {% endif %} value="new_intraday_lows">New Intraday Lows</option>
-    <option {% if request.query_params.filter == 'new_closing_lows' %}selected = "selected" {% endif %} value="new_closing_lows">New Closing Lows</option>
+        <option value="">All Stocks</option>
+        <option {% if request.query_params.filter=='new_closing_highs' %}selected="selected" {% endif %}
+                value="new_closing_highs">New Closing Highs
+        </option>
+        <option {% if request.query_params.filter=='new_closing_lows' %}selected="selected" {% endif %}
+                value="new_closing_lows">New Closing Lows
+        </option>
     </select>
     <input type="submit">
 </form>
 
 </form>
+
 <table class="ui selectable inverted table">
     <thead>
     <tr>
         <th>Symbol</th>
         <th>Name</th>
+        <th>Back to Top</th>
 
     </tr>
     </thead>
@@ -26,7 +30,8 @@
     {% for stock in stocks %}
     <tr>
         <td>{{ stock.symbol }}</td>
-        <td><a href="/stock/{{ stock.symbol }}"> {{ stock.name }}</a></td>
+        <td><a href="/stock/{{ stock.symbol }}"> {{ stock.stock_id }}</a></td>
+        <td><a href="#top"><i class="angle double up icon"></i></a></td>
     </tr>
     {% endfor %}
     </tbody>
