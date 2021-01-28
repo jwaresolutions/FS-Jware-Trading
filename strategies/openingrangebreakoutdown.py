@@ -8,33 +8,31 @@ import alpaca_connection
 
 class OpeningRangeBreakOutDownClass:
     def __init__(self):
-        self.api = tradeapi.REST(self.API_KEY, self.SECRET_KEY, base_url=self.API_URL)
-        self.connect = alpaca_connection.Alpaca_Connect()
+
+        self.alpaca_connect = alpaca_connection.Alpaca_Connect()
         self.context = ssl.create_default_context()
-        self.self.messages = []
+        self.messages = []
         self.current_date = date.today().isoformat()
-        self.API_KEY = self.connect.key_id
-        self.SECRET_KEY = self.connect.secret_key
-        self.API_URL = self.connect.endpoint
-        self.db_path = self.connect.db_path
+        self.API_KEY = 'emptykey'
+        self.API_KEY = self.alpaca_connect.key_id
+        self.SECRET_KEY = self.alpaca_connect.secret_key
+        self.API_URL = self.alpaca_connect.endpoint
+        self.db_path = self.alpaca_connect.db_path
         self.new_order = False
-        self.strategy_type = 'breakout'
+        self.strategy_type = ''
         self.dst_check()
-        self.strategy()
+        self.strategy_check()
+
         if self.new_order:
             self.notification()
 
     def strategy_check(self):
-        if self.strategy_type == 'breakout':
-            self.side = 'buy'
-        elif self.strategy_type == 'breakdown':
-            self.side = 'sell'
-        elif self.strategy_type == '':
-            print('you must provide a strategy type')
-            raise Exception('failed to include strategy type')
-        else:
-            print('something went wrong, is the strategy spelled correctly?')
-            raise Exception('something went wrong, is the strategy spelled correctly?')
+        self.strategy_type = 'opening_range_breakout'
+        self.side = 'buy'
+        self.strategy()
+        strategy_type = 'opening_range_breakdown'
+        self.side = 'sell'
+        self.strategy()
 
     def dst_check(self):
         if self.alpaca_connect.is_dst():
@@ -57,7 +55,8 @@ class OpeningRangeBreakOutDownClass:
                 server.sendmail(self.alpaca_connect.email_address, self.alpaca_connect.email_sms, email_message)
 
     def new_order(self, limit_price, profit_at, stop_loss_at):
-        self.api.submit_order(
+        api = tradeapi.REST(self.API_KEY, self.SECRET_KEY, base_url=self.API_URL)
+        api.submit_order(
             symbol=self.symbol,
             side=self.side,
             type='limit',
@@ -70,7 +69,8 @@ class OpeningRangeBreakOutDownClass:
         )
 
     def strategy(self):
-        orders = self.api.list_orders(status='all', after=f"{self.current_date}T13:30:00Z")
+        api = tradeapi.REST(self.API_KEY, self.SECRET_KEY, base_url=self.API_URL)
+        orders = api.list_orders(status='all', after=f"{self.current_date}T13:30:00Z")
         existing_order_symbols = [order.symbol for order in orders if order != 'canceled']
         connection = sqlite3.connect(self.db_path)
         connection.row_factory = sqlite3.Row
@@ -92,7 +92,7 @@ class OpeningRangeBreakOutDownClass:
         symbols = [stock['symbol'] for stock in stocks]
 
         for symbol in symbols:
-            minute_bars = self.api.polygon.historic_agg_v2(symbol, 1, 'minute', _from=self.current_date,
+            minute_bars = api.polygon.historic_agg_v2(symbol, 1, 'minute', _from=self.current_date,
                                                            to=self.current_date).df
             print(symbol)
             # create a mask to only show the first 15 min of price data after the markets open
@@ -137,3 +137,5 @@ class OpeningRangeBreakOutDownClass:
                     self.new_order(limit_price, profit_at, stop_loss_at)
                 else:
                     print(f'Order for {symbol} already exists, current list of orders {existing_order_symbols}')
+
+run = OpeningRangeBreakOutDownClass
