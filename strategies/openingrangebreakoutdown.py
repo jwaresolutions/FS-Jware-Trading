@@ -9,14 +9,14 @@ import alpaca_connection
 class OpeningRangeBreakOutDownClass:
     def __init__(self):
         self.api = tradeapi.REST(self.API_KEY, self.SECRET_KEY, base_url=self.API_URL)
-        self.alpaca_connect = alpaca_connection.Alpaca_Connect()
+        self.connect = alpaca_connection.Alpaca_Connect()
         self.context = ssl.create_default_context()
         self.self.messages = []
         self.current_date = date.today().isoformat()
-        self.API_KEY = alpaca_connection.key_id
-        self.SECRET_KEY = alpaca_connection.secret_key
-        self.API_URL = alpaca_connection.endpoint
-        self.db_path = alpaca_connection.db_path
+        self.API_KEY = self.connect.key_id
+        self.SECRET_KEY = self.connect.secret_key
+        self.API_URL = self.connect.endpoint
+        self.db_path = self.connect.db_path
         self.new_order = False
         self.strategy_type = 'breakout'
         self.dst_check()
