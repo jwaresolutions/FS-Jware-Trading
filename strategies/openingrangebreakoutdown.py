@@ -8,7 +8,6 @@ import alpaca_connection
 
 class OpeningRangeBreakOutDownClass:
     def __init__(self):
-
         self.alpaca_connect = alpaca_connection.Alpaca_Connect()
         self.context = ssl.create_default_context()
         self.messages = []
@@ -33,14 +32,17 @@ class OpeningRangeBreakOutDownClass:
         strategy_type = 'opening_range_breakdown'
         self.side = 'sell'
         self.strategy()
+        self.notification()
 
     def dst_check(self):
-        if self.alpaca_connect.is_dst():
-            self.start_minute_bar = "09:30:00-04:00"
-            self.end_minute_bar = "09:45:00-04:00"
-        else:
-            self.start_minute_bar = "09:30:00-05:00"
-            self.end_minute_bar = "09:45:00-05:00"
+        # if is_dst():
+        #     print("daylight savings")
+        #     self.start_minute_bar = f"{self.current_date} 09:30:00-04:00"
+        #     self.end_minute_bar = f"{self.current_date} 09:45:00-04:00"
+        # else:
+        #     print("not daylight savings")
+        self.start_minute_bar = f"{self.current_date} 09:30:00-05:00"
+        self.end_minute_bar = f"{self.current_date} 09:45:00-05:00"
 
     def notification(self):
         print(self.messages)
@@ -54,7 +56,7 @@ class OpeningRangeBreakOutDownClass:
                 server.sendmail(self.alpaca_connect.email_address, self.alpaca_connect.email_address, email_message)
                 server.sendmail(self.alpaca_connect.email_address, self.alpaca_connect.email_sms, email_message)
 
-    def new_order(self, limit_price, profit_at, stop_loss_at):
+    def order(self, limit_price, profit_at, stop_loss_at):
         api = tradeapi.REST(self.API_KEY, self.SECRET_KEY, base_url=self.API_URL)
         api.submit_order(
             symbol=self.symbol,
@@ -93,13 +95,14 @@ class OpeningRangeBreakOutDownClass:
 
         for symbol in symbols:
             minute_bars = api.polygon.historic_agg_v2(symbol, 1, 'minute', _from=self.current_date,
-                                                           to=self.current_date).df
-            print(symbol)
+                                                      to=self.current_date).df
+            print(f"{symbol} and {self.strategy_type}")
             # create a mask to only show the first 15 min of price data after the markets open
             opening_range_mask = (minute_bars.index >= self.start_minute_bar) & (
                     minute_bars.index < self.end_minute_bar)
             # resulting data from the mask
             opening_range_bars = minute_bars.loc[opening_range_mask]
+            print(opening_range_bars)
             # find the lowest value in that 15 min period
             opening_range_low = opening_range_bars['low'].min()
             # find the highest value in that 15 min period
@@ -124,7 +127,7 @@ class OpeningRangeBreakOutDownClass:
                         f"placing order for {symbol} at {limit_price}, closed above {opening_range_high}\n\n{after_opening_range_breakout.iloc[0]['close']}\n\n")
                     profit_at = dict(limit_price=limit_price + opening_range, )
                     stop_loss_at = dict(limit_price=limit_price - opening_range, )
-                    self.new_order(limit_price, profit_at, stop_loss_at)
+                    self.order(limit_price, profit_at, stop_loss_at)
                 elif after_opening_range_breakdown.empty and symbol not in existing_order_symbols:
                     self.new_order = True
                     limit_price = after_opening_range_breakdown.iloc[0]['close']
@@ -134,8 +137,9 @@ class OpeningRangeBreakOutDownClass:
                         f"placing order for {symbol} at {limit_price}, closed above {opening_range_high}\n\n{after_opening_range_breakout.iloc[0]['close']}\n\n")
                     profit_at = dict(limit_price=limit_price - opening_range, )
                     stop_loss_at = dict(limit_price=limit_price + opening_range, )
-                    self.new_order(limit_price, profit_at, stop_loss_at)
+                    self.order(limit_price, profit_at, stop_loss_at)
                 else:
                     print(f'Order for {symbol} already exists, current list of orders {existing_order_symbols}')
+
 
 run = OpeningRangeBreakOutDownClass

@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from datetime import date
-import DB.views as views
+
 current_date = date.today().isoformat()
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -56,7 +56,7 @@ def stock_detail(request: Request, symbol):
         SELECT * from strategy
     
     """)
-    strategys = cursor.fetchall()
+    strategies = cursor.fetchall()
 
     cursor.execute("""
         SELECT id, symbol, name FROM stock WHERE symbol = ?
@@ -71,7 +71,7 @@ def stock_detail(request: Request, symbol):
     prices = cursor.fetchall()
 
     return templates.TemplateResponse("stock_detail.html",
-                                      {"request": request, "stock": row, "bars": prices, "strategys": strategys})
+                                      {"request": request, "stock": row, "bars": prices, "strategies": strategies})
 
 
 @app.post("/apply_strategy")
