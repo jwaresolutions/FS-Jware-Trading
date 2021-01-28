@@ -1,7 +1,9 @@
 import sqlite3
+import alpaca_connect as ac
 
+alpaca_connect = ac.Alpaca_Connect()
 
-connection = sqlite3.connect('FS_Jware_Trading.db')
+connection = sqlite3.connect(alpaca_connect.db_path)
 
 cursor = connection.cursor()
 
@@ -49,6 +51,6 @@ strategies = ['opening_range_breakout', 'opening_range_breakdown']
 for strategy in strategies:
     cursor.execute("""
         INSERT INTO strategy (name) VALUES (?)
-    """,(strategy,))
+    """, (strategy,))
 
 connection.commit()

@@ -1,29 +1,30 @@
 import sys
 import os
-
 PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
-
 import sqlite3
 import config
 import alpaca_trade_api as tradeapi
 from datetime import date
 import smtplib, ssl
-from timezone import is_dst
 
 context = ssl.create_default_context()
 messages = []
 current_date = date.today().isoformat()
-API_KEY = config.get_keys(request='key_id', dryrun=True)
-SECRET_KEY = config.get_keys(request='secret_key', dryrun=True)
-API_URL = config.get_keys(request='endpoint', dryrun=True)
+
+alpaca_connect = config.Alpaca_Connect()
+API_KEY = alpaca_connect.key_id
+SECRET_KEY = alpaca_connect.secret_key
+API_URL = alpaca_connect.endpoint
+db_path = alpaca_connect.db_path
+
 neworder = False
 api = tradeapi.REST(API_KEY, SECRET_KEY, base_url=API_URL)
 
 orders = api.list_orders(status='all', after=f"{current_date}T13:30:00Z")
 existing_order_symbols = [order.symbol for order in orders if order != 'cancled']
-connection = sqlite3.connect(config.db_path)
+connection = sqlite3.connect(db_path)
 connection.row_factory = sqlite3.Row
 
 cursor = connection.cursor()
@@ -44,7 +45,7 @@ cursor.execute("""
 stocks = cursor.fetchall()
 symbols = [stock['symbol'] for stock in stocks]
 
-if is_dst():
+if alpaca_connect.is_dst():
     start_minute_bar = f"{current_date} 09:30:00-04:00"
     end_minute_bar = f"{current_date} 09:45:00-04:00"
 else:
@@ -87,16 +88,16 @@ for symbol in symbols:
         )
 
     else:
-        print(f"Order for {symbol} alredy exists, current list of orders {existing_order_symbols}")
+        print(f"Order for {symbol} already exists, current list of orders {existing_order_symbols}")
 
 
 print(messages)
 if neworder == True:
     neworder = False
-    with smtplib.SMTP_SSL(config.email_host, config.email_port, context=context) as server:
-        server.login(config.email_address, config.email_password)
+    with smtplib.SMTP_SSL(alpaca_connect.email_host, alpaca_connect.email_port, context=context) as server:
+        server.login(alpaca_connect.email_address, alpaca_connect.email_password)
         email_message = f"Subject: Trade Notification for {current_date}\n\n"
         email_message += "\n\n".join(messages)
-        server.sendmail(config.email_address, config.email_address, email_message)
-        server.sendmail(config.email_address, config.email_sms, email_message)
+        server.sendmail(alpaca_connect.email_address, alpaca_connect.email_address, email_message)
+        server.sendmail(alpaca_connect.email_address, alpaca_connect.email_sms, email_message)
 

@@ -1,6 +1,9 @@
 import sqlite3
-import config as config
-connection = sqlite3.connect(config.db_path)
+import alpaca_connect as ac
+
+alpaca_connect = ac.Alpaca_Connect()
+
+connection = sqlite3.connect(alpaca_connect.db_path)
 
 cursor = connection.cursor()
 

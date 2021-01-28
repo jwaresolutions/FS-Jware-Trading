@@ -1,11 +1,14 @@
-import sqlite3, config
+import sqlite3
 import alpaca_trade_api as tradeapi
+import alpaca_connect as ac
 
-API_KEY = config.get_keys(request='key_id', dryrun=True)
-SECRET_KEY = config.get_keys(request='secret_key', dryrun=True)
-API_URL = config.get_keys(request='endpoint', dryrun=True)
+alpaca_connect = ac.Alpaca_Connect()
 
-connection = sqlite3.connect(config.db_path)
+API_KEY = alpaca_connect.key_id
+SECRET_KEY = alpaca_connect.secret_key
+API_URL = alpaca_connect.endpoint
+
+connection = sqlite3.connect(alpaca_connect.db_path)
 
 connection.row_factory = sqlite3.Row
 
@@ -19,6 +22,7 @@ rows = cursor.fetchall()
 
 symbols = []
 stock_dict = {}
+
 for row in rows:
     symbol = row['symbol']
     symbols.append(symbol)

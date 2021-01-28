@@ -1,12 +1,16 @@
 import sqlite3
-import config as config
+import alpaca_connect as ac
 import alpaca_trade_api as tradeapi
 
-API_KEY = config.get_keys(request='key_id', dryrun=True)
-SECRET_KEY = config.get_keys(request='secret_key', dryrun=True)
-API_URL = config.get_keys(request='endpoint', dryrun=True)
 
-connection = sqlite3.connect(config.db_path)
+alpaca_connect = ac.Alpaca_Connect()
+API_KEY = alpaca_connect.key_id
+SECRET_KEY = alpaca_connect.secret_key
+API_URL = alpaca_connect.endpoint
+connection_path = alpaca_connect.db_path
+
+print(f"{API_KEY}, {SECRET_KEY}, {API_URL}")
+connection = sqlite3.connect(connection_path)
 connection.row_factory = sqlite3.Row
 
 cursor = connection.cursor()
