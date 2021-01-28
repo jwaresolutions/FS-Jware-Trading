@@ -17,4 +17,8 @@ cursor.execute("""
     DROP TABLE stock
 """)
 
+cursor.execute("""
+    DROP TABLE strategy
+""")
+
 connection.commit()
