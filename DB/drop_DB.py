@@ -1,5 +1,3 @@
-import include
-include
 import sqlite3
 import alpaca_connection as ac
 
