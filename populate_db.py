@@ -2,9 +2,9 @@ import sqlite3
 import config as config
 import alpaca_trade_api as tradeapi
 
-API_KEY = config.get_keys(request='key_id', dryrun=False)
-SECRET_KEY = config.get_keys(request='secret_key', dryrun=False)
-API_URL = config.get_keys(request='endpoint', dryrun=False)
+API_KEY = config.get_keys(request='key_id', dryrun=True)
+SECRET_KEY = config.get_keys(request='secret_key', dryrun=True)
+API_URL = config.get_keys(request='endpoint', dryrun=True)
 
 connection = sqlite3.connect(config.db_path)
 connection.row_factory = sqlite3.Row
