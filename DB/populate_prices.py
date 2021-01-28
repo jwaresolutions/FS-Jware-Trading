@@ -2,7 +2,7 @@ import include
 include
 import sqlite3
 import alpaca_trade_api as tradeapi
-import alpaca_connect as ac
+import alpaca_connection as ac
 
 alpaca_connect = ac.Alpaca_Connect()
 

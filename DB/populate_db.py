@@ -1,5 +1,5 @@
 import sqlite3
-import alpaca_connect as ac
+import alpaca_connection as ac
 import alpaca_trade_api as tradeapi
 
 
