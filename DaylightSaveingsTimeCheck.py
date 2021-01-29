@@ -9,7 +9,6 @@ def is_dst():
     x = datetime(datetime.now().year, 1, 1, 0, 0, 0, tzinfo=pytz.timezone('US/Eastern'))  # Jan 1 of this year
     y = datetime.now(pytz.timezone('US/Eastern'))
     x_offset = x.utcoffset()
-    print(f"{x.utcoffset()} and \n{y.utcoffset()}")
 
     # if DST is in effect, their offsets will be different
     return not (y.utcoffset() == x.utcoffset())

@@ -35,12 +35,12 @@ class OpeningRangeBreakOutDownClass:
         self.notification()
 
     def dst_check(self):
-        # if is_dst():
-        #     print("daylight savings")
-        #     self.start_minute_bar = f"{self.current_date} 09:30:00-04:00"
-        #     self.end_minute_bar = f"{self.current_date} 09:45:00-04:00"
-        # else:
-        #     print("not daylight savings")
+        if is_dst():
+            print("daylight savings")
+            self.start_minute_bar = f"{self.current_date} 09:30:00-04:00"
+            self.end_minute_bar = f"{self.current_date} 09:45:00-04:00"
+        else:
+            print("not daylight savings")
         self.start_minute_bar = f"{self.current_date} 09:30:00-05:00"
         self.end_minute_bar = f"{self.current_date} 09:45:00-05:00"
 
