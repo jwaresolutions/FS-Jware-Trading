@@ -1,0 +1,1 @@
+# compile a way for stratagys to call different order types by listing them here as a function.
