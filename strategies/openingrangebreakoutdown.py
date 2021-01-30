@@ -1,33 +1,24 @@
-import smtplib
-import sqlite3, ssl
+import sqlite3, alpaca_connection
 import alpaca_trade_api as tradeapi
-from datetime import date
-from DaylightSaveingsTimeCheck import is_dst
-import alpaca_connection
-import numpy as nu
+from datetime import date, datetime
+from pytz import timezone
+from Orders import order, send_message
 
-def order(symbol, limit_price, profit_price, stop_price):
-    print("order placed")
-    api.submit_order(
-        symbol=symbol,
-        side='buy',
-        type='limit',
-        qty='1',
-        time_in_force='day',
-        order_class='bracket',
-        limit_price=limit_price,
-        take_profit=dict(
-            limit_price=profit_price,
-        ),
-        stop_loss=dict(
-            stop_price=stop_price,
-        )
-    )
 
-context = ssl.create_default_context()
+def get_date_isoformat(_date=None):
+    tz = timezone('America/New_York')
+    _date = datetime.strptime(f'{_date}', '%Y-%m-%d').astimezone(tz)
+    _date = _date.isoformat()
+    return _date
+
+
+print(datetime.now())
+current_date = date.today().isoformat()
+strategy_name = 'opening_range_break_out_down'
+dst_check = get_date_isoformat('2020-11-07')[-6:]
+
 messages = []
-current_date = '2021-01-29'
-# date.today().isoformat()
+
 alpaca_connect = alpaca_connection.Alpaca_Connect()
 API_KEY = alpaca_connect.key_id
 SECRET_KEY = alpaca_connect.secret_key
@@ -45,8 +36,8 @@ connection.row_factory = sqlite3.Row
 cursor = connection.cursor()
 
 cursor.execute("""
-    select id from strategy where name = 'opening_range_break_out_down'
-""")
+    select id from strategy where name = ?
+""", (strategy_name,))
 
 strategy_id = cursor.fetchone()['id']
 
@@ -77,12 +68,8 @@ for symbol in symbols:
     }
     i += 1
 
-if is_dst():
-    start_minute_bar = f"{current_date} 09:30:00-04:00"
-    end_minute_bar = f"{current_date} 09:45:00-04:00"
-else:
-    start_minute_bar = f"{current_date} 09:30:00-05:00"
-    end_minute_bar = f"{current_date} 09:45:00-05:00"
+start_minute_bar = f"{current_date} 09:30:00{dst_check}"
+end_minute_bar = f"{current_date} 16:00:00{dst_check}"
 
 for symbol in symbols:
     minute_bars = api.polygon.historic_agg_v2(symbol, 1, 'minute', _from=current_date, to=current_date).df
@@ -126,25 +113,18 @@ for symbol in symbols:
             f"placing order for {symbol} at {limit_price}, closed above {opening_range_high}\n\n{after_opening_range_breakout.iloc[0]['close']}\n\n")
         print(
             f"placing order for {symbol} at {limit_price}, closed above {opening_range_high}\n\n{after_opening_range_breakout.iloc[0]['close']}\n\n")
-        order(symbol, limit_price, limit_price + opening_range, limit_price - opening_range)
+        order(symbol, 'buy', limit_price, limit_price + opening_range, limit_price - opening_range)
     # Breakdown Logic
     elif not after_opening_range_breakdown.empty and symbol not in existing_order_symbols and sma_20_breakdown and sma_50_breakdown:
         messages.append(
             f"placing order for {symbol} at {limit_price}, closed below {opening_range_low}\n\n{after_opening_range_breakdown.iloc[0]['close']}\n\n")
         print(
             f"placing order for {symbol} at {limit_price}, closed below {opening_range_low}\n\n{after_opening_range_breakdown.iloc[0]['close']}\n\n")
-
-    else:
+        order(symbol, 'sell', limit_price, limit_price - opening_range, limit_price + opening_range)
+    elif symbol in existing_order_symbols:
         print(f"Order for {symbol} already exists, current list of orders {existing_order_symbols}")
+    else:
+        print(f"{symbol} did not match this strategy at {get_date_isoformat(current_date)}")
 
-
-
-# print(messages)
-# if neworder == True:
-#     neworder = False
-#     with smtplib.SMTP_SSL(alpaca_connect.email_host, alpaca_connect.email_port, context=context) as server:
-#         server.login(alpaca_connect.email_address, alpaca_connect.email_password)
-#         email_message = f"Subject: Trade Notification for {current_date}\n\n"
-#         email_message += "\n\n".join(messages)
-#         server.sendmail(alpaca_connect.email_address, alpaca_connect.email_address, email_message)
-#         server.sendmail(alpaca_connect.email_address, alpaca_connect.email_sms, email_message)
+if not messages:
+    send_message(messages)

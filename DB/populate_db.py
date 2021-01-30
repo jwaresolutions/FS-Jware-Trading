@@ -38,7 +38,7 @@ for asset in assets:
         print(asset.symbol)
         print(e)
 
-strategies = ['opening_range_break_out_down']
+strategies = ['opening_range_break_out_down', 'Bollinger_bands']
 
 for strategy in strategies:
     cursor.execute("""
