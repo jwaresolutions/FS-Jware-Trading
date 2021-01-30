@@ -40,10 +40,27 @@ def index(request: Request):
         SELECT id, symbol, name as stock_id FROM stock ORDER by symbol
         """)
 
-
-
     rows = cursor.fetchall()
-    return templates.TemplateResponse("index.html", {"request": request, "stocks": rows})
+
+    cursor.execute("""
+        SELECT symbol, rsi_14, sma_20, sma_50, close
+        from stock_price 
+        JOIN stock on stock.id = stock_price.stock_id
+        WHERE date = ?
+    """, (current_date,))
+
+    indicator_rows = cursor.fetchall()
+    indicator_values = {}
+
+    for row in indicator_rows:
+        indicator_values[row['symbol']] = row
+
+    print(indicator_values)
+
+    return templates.TemplateResponse("index.html",
+                                      {"request": request,
+                                       "indicator_values": indicator_values,
+                                       "stocks": rows})
 
 
 @app.get("/stock/{symbol}")
@@ -54,9 +71,9 @@ def stock_detail(request: Request, symbol):
 
     cursor.execute("""
         SELECT * from strategy
-    
+
     """)
-    strategies = cursor.fetchall()
+    strategys = cursor.fetchall()
 
     cursor.execute("""
         SELECT id, symbol, name FROM stock WHERE symbol = ?
@@ -71,7 +88,7 @@ def stock_detail(request: Request, symbol):
     prices = cursor.fetchall()
 
     return templates.TemplateResponse("stock_detail.html",
-                                      {"request": request, "stock": row, "bars": prices, "strategies": strategies})
+                                      {"request": request, "stock": row, "bars": prices, "strategys": strategys})
 
 
 @app.post("/apply_strategy")
@@ -80,12 +97,11 @@ def apply_strategy(strategy_id: int = Form(...), stock_id: int = Form(...)):
     cursor = connection.cursor()
 
     cursor.execute("""
-        INSERT INTO stock_strategy (stock_id, strategy_id) VALUES (?, ?)
-    """, (stock_id, strategy_id))
+    INSERT INTO stock_strategy (stock_id, strategy_id) VALUES (?, ?)
+""", (stock_id, strategy_id))
 
     connection.commit()
     return RedirectResponse(url=f"/strategy/{strategy_id}", status_code=303)
-
 
 @app.get("/strategy/{strategy_id}")
 def strategy(request: Request, strategy_id):
@@ -94,18 +110,18 @@ def strategy(request: Request, strategy_id):
     cursor = connection.cursor()
 
     cursor.execute("""
-        SELECT id, name
-        FROM strategy
-        WHERE id = ?    
-    """, (strategy_id,))
+    SELECT id, name
+    FROM strategy
+    WHERE id = ?    
+""", (strategy_id,))
 
     strategy = cursor.fetchone()
 
     cursor.execute("""
-        SELECT symbol, name
-        FROM stock JOIN stock_strategy on stock_strategy.stock_id = stock_id
-        WHERE strategy_id = ?
-    """, (strategy_id,))
+    SELECT symbol, name
+    FROM stock JOIN stock_strategy on stock_strategy.stock_id = stock_id
+    WHERE strategy_id = ?
+""", (strategy_id,))
 
     stocks = cursor.fetchall()
 

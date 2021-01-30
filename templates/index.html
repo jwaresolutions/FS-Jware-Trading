@@ -22,6 +22,8 @@
     <tr>
         <th>Symbol</th>
         <th>Name</th>
+        <th>RSI 14</th>
+        <th>SMA 20</th>
         <th>Back to Top</th>
 
     </tr>
@@ -29,9 +31,26 @@
     <tbody>
     {% for stock in stocks %}
     <tr>
+
         <td>{{ stock.symbol }}</td>
         <td><a href="/stock/{{ stock.symbol }}"> {{ stock.stock_id }}</a></td>
+        {% if indicator_values[stock.symbol] %}
+            {% if indicator_values[stock.symbol].rsi_14 %}
+                <td>{{ indicator_values[stock.symbol].rsi_14|round(2) }}</td>
+            {% else %}
+                <td>None</td>
+            {% endif %}
+            {% if indicator_values[stock.symbol].sma_20 %}
+                <td>{{ indicator_values[stock.symbol].sma_20|round(2) }}</td>
+            {% else %}
+                <td>None</td>
+            {% endif %}
+        {% else %}
+            <td>None</td>
+            <td>None</td>
+        {% endif %}
         <td><a href="#top"><i class="angle double up icon"></i></a></td>
+
     </tr>
     {% endfor %}
     </tbody>

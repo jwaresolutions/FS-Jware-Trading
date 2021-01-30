@@ -38,7 +38,7 @@ for asset in assets:
         print(asset.symbol)
         print(e)
 
-strategies = ['opening_range_breakout', 'opening_range_breakdown']
+strategies = ['opening_range_break_out_down']
 
 for strategy in strategies:
     cursor.execute("""

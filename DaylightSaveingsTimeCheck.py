@@ -14,4 +14,3 @@ def is_dst():
     return not (y.utcoffset() == x.utcoffset())
 
 
-print(is_dst())
