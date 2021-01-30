@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<table class="ui selectable inverted table">
+    <thead>
+        <tr>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for strategy in strategies %}
+        <tr>
+            <td>
+                <a href="/strategy/{{ strategy.id }}">
+                {{ strategy.name }}</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

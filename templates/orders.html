@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>
+    Stocks
+</h2>
+<table class="ui selectable inverted table">
+    <thead>
+    <tr>
+        <th>Created AT</th>
+        <th>Buy/Sell</th>
+        <th>Symbol</th>
+        <th>QTY</th>
+        <th>Avg Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+    <tr>
+        <td>{{ order.created_at }}</td>
+        <td> {{ order.side }}</td>
+        <td>{{ order.filled_qty }}</td>
+        <td> {{ order.symbol }}</td>
+        <td> {{ order.filled_avg_price }}</td>
+        <td> {{ order.status  }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

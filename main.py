@@ -4,6 +4,13 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from datetime import date
+import alpaca_trade_api as tradeapi
+import alpaca_connection
+
+alpaca_connect = alpaca_connection.Alpaca_Connect()
+API_KEY = alpaca_connect.key_id
+SECRET_KEY = alpaca_connect.secret_key
+API_URL = alpaca_connect.endpoint
 
 current_date = date.today().isoformat()
 app = FastAPI()
@@ -103,6 +110,22 @@ def apply_strategy(strategy_id: int = Form(...), stock_id: int = Form(...)):
     connection.commit()
     return RedirectResponse(url=f"/strategy/{strategy_id}", status_code=303)
 
+
+@app.get("/strategies")
+def strategies(request: Request):
+    connection = sqlite3.connect(config.db_path)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT * from strategy
+    """)
+
+    strategies = cursor.fetchall()
+
+    return templates.TemplateResponse("strategies.html", {"request": request, "strategies": strategies})
+
+
 @app.get("/strategy/{strategy_id}")
 def strategy(request: Request, strategy_id):
     connection = sqlite3.connect(config.db_path)
@@ -118,11 +141,20 @@ def strategy(request: Request, strategy_id):
     strategy = cursor.fetchone()
 
     cursor.execute("""
-    SELECT symbol, name
-    FROM stock JOIN stock_strategy on stock_strategy.stock_id = stock_id
-    WHERE strategy_id = ?
+        SELECT symbol, name
+        FROM stock_strategy
+        JOIN stock on stock.id = stock_strategy.stock_id
+        WHERE strategy_id = ?
 """, (strategy_id,))
 
     stocks = cursor.fetchall()
 
     return templates.TemplateResponse("strategy.html", {"request": request, "stocks": stocks, "strategy": strategy})
+
+
+@app.get("/orders")
+def orders(request: Request):
+    api = tradeapi.REST(API_KEY, SECRET_KEY, base_url=API_URL)
+    orders = api.list_orders(status='all')
+
+    return templates.TemplateResponse("orders.html", {"request": request, "orders": orders})
