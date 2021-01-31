@@ -36,3 +36,21 @@ def send_message(messages):
         email_message += "\n\n".join(messages)
         server.sendmail(alpaca_connect.email_address, alpaca_connect.email_address, email_message)
         server.sendmail(alpaca_connect.email_address, alpaca_connect.email_sms, email_message)
+
+
+    # Backup bracket order
+    # api.submit_order(
+    #     symbol=symbol,
+    #     side=side,
+    #     type='limit',
+    #     qty='1',
+    #     time_in_force='day',
+    #     order_class='bracket',
+    #     limit_price=limit_price,
+    #     take_profit=dict(
+    #         limit_price=profit_price,
+    #     ),
+    #     stop_loss=dict(
+    #         stop_price=stop_price,
+    #     )
+    # )

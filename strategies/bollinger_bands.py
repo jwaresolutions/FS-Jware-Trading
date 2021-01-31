@@ -72,11 +72,12 @@ end_minute_bar = f"{current_date} 12:19:00{dst_check}"
 
 for symbol in symbols:
     minute_bars = api.polygon.historic_agg_v2(symbol, 1, 'minute', _from=current_date, to=current_date).df
+    minute_bars = minute_bars.resample('1min').ffill()
     market_open_mask = (minute_bars.index >= start_minute_bar) & (minute_bars.index < end_minute_bar)
     market_open_bars = minute_bars.loc[market_open_mask]
     if len(market_open_bars) >= 20:
         closes = market_open_bars.close.values
-        lower, middle, upper = tulipy.bbands(closes, 20, 2)
+        lower, middle, upper = tulipy.bbands(closes, 20, 2.5)
         print(lower[-1])
         current_candle = market_open_bars.iloc[-1]
         previous_candle = market_open_bars.iloc[-2]

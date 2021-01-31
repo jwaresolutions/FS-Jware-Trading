@@ -1,16 +1,19 @@
 #future work, automate this process with https://stackabuse.com/scheduling-jobs-with-python-crontab/
 
 # updates list of traceable stocks once a week on sunday night at midnight
-0 0 * * 1 {path to package}/FS-Jware-Trading/bin/python {path to package}/FS-Jware-Trading/populate_db.py > output.log 2>&1
+0 0 * * 1 /home/Ubuntu/FS-Jware-Trading/bin/python /home/Ubuntu/FS-Jware-Trading/populate_db.py >> output.log 2>&1
 
 # updates previous day price history at 4am monday-friday
-0 4 * * * 1-5 {path to package}/FS-Jware-Trading/bin/python {path to package}/FS-Jware-Trading/populate_prices.py > output.log 2>&1
+0 4 * * * 1-5 /home/Ubuntu/FS-Jware-Trading/bin/python /home/Ubuntu/FS-Jware-Trading/populate_prices.py >> output.log 2>&1
 
 #runs opening breakout breakdown strategy every minute from 6am to 7am monday-friday. future work to change this to a strategy handler script for multiple strategies
-*/1 6-7 * * 1-5 {path to package}/FS-Jware-Trading/bin/python {path to package}/FS-Jware-Trading/openingrangebreakoutdown.py > output.log 2>&1
+*/1 6-7 * * 1-5 /home/Ubuntu/FS-Jware-Trading/bin/python /home/Ubuntu/FS-Jware-Trading/openingrangebreakoutdown.py >> output.log 2>&1
 
 #runs Bollinger band strategy every minute from 7am to 4pm monday-friday. future work to change this to a strategy handler script for multiple strategies
-*/1 7-16 * * 1-5 {path to package}/FS-Jware-Trading/bin/python {path to package}/FS-Jware-Trading/openingrangebreakoutdown.py > output.log 2>&1
+*/1 7-12 * * 1-5 /home/Ubuntu/FS-Jware-Trading/bin/python /home/Ubuntu/FS-Jware-Trading/openingrangebreakoutdown.py >> output.log 2>&1
 
 # automatically pull the latest deployed version of the config, this does not work right now
-#0 10 * * * cd {path to package}/FS-Jware-Trading/ && git pull --rebase > output.log 2&1
+#0 10 * * * cd /home/Ubuntu/FS-Jware-Trading/ && source bin/activate && git pull --rebase > output.log 2&1
+
+# automatically close all positions half an hour before the close of the trading day
+30 12 * * 1-5 /home/Ubuntu/FS-Jware-Trading/bin/python /home/Ubuntu/FS-Jware-Trading/daily_close.py >> output.log 2>&1
