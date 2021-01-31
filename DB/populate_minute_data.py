@@ -31,7 +31,8 @@ for symbol in stocks_dict:
     start_date = end_date_range - timedelta(weeks=52)
 
     while start_date < end_date_range:
-        minutes = api.polygon.historic_agg_v2('AMC', 1, 'minute', _from=start_date, to=start_date).df
+        end_date = start_date + timedelta(days=4)
+        minutes = api.polygon.historic_agg_v2('AMC', 1, 'minute', _from=start_date, to=end_date).df
         minutes = minutes.resample('1min').ffill()
         for index, row in minutes.iterrows():
             recent_closes.append(row['close'])
@@ -48,5 +49,4 @@ for symbol in stocks_dict:
                   row['volume'], sma_20, sma_50, rsi_14))
 
         connection.commit()
-        start_date = start_date + timedelta(days=1)
-    start_date = start_date + timedelta(days=2)
+    start_date = start_date + timedelta(days=7)
