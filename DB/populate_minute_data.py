@@ -32,7 +32,7 @@ for symbol in stocks_dict:
 
     while start_date < end_date_range:
         end_date = start_date + timedelta(days=4)
-        minutes = api.polygon.historic_agg_v2('AMC', 1, 'minute', _from=start_date, to=end_date).df
+        minutes = api.polygon.historic_agg_v2(stocks, 1, 'minute', _from=start_date, to=end_date).df
         print(f"Adding {symbol} from {start_date} to {end_date}")
         minutes = minutes.resample('1min').ffill()
         for index, row in minutes.iterrows():
