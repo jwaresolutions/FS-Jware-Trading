@@ -31,23 +31,22 @@ for symbol in stocks_dict:
     start_date = end_date_range - timedelta(weeks=52)
 
     while start_date < end_date_range:
-        for i in [1, 2, 3, 4, 5]:
-            minutes = api.polygon.historic_agg_v2(symbol, 1, 'minute', _from=start_date, to=start_date).df
-            minutes = minutes.resample('1min').ffill()
-            for index, row in minutes.iterrows():
-                recent_closes.append(row['close'])
-                if len(recent_closes) >= 50:
-                    sma_20 = tulipy.sma(numpy.array(recent_closes), period=20)[-1]
-                    sma_50 = tulipy.sma(numpy.array(recent_closes), period=50)[-1]
-                    rsi_14 = tulipy.rsi(numpy.array(recent_closes), period=14)[-1]
-                else:
-                    sma_20, sma_50, rsi_14 = None, None, None
-                cursor.execute("""
-                    INSERT INTO stock_price_minute (stock_id, datetime, open, high, low, close, volume, sma_20, sma_50, rsi_14)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (stocks_dict[symbol], index.tz_localize(None).isoformat(), row['open'], row['high'], row['low'],
-                      row['close'], row['volume'], sma_20, sma_50, rsi_14))
-            print(f"== Fetching minute bars for {symbol} {start_date} ==")
-            start_date = start_date + timedelta(days=1)
-        start_date = start_date + timedelta(days=2)
-# connection.commit()
+        end_date = start_date + timedelta(days=4)
+        minutes = api.polygon.historic_agg_v2(symbol, 1, 'minute', _from=start_date, to=end_date).df
+        minutes = minutes.resample('1min').ffill()
+        for index, row in minutes.iterrows():
+            recent_closes.append(row['close'])
+            if len(recent_closes) >= 50:
+                sma_20 = tulipy.sma(numpy.array(recent_closes), period=20)[-1]
+                sma_50 = tulipy.sma(numpy.array(recent_closes), period=50)[-1]
+                rsi_14 = tulipy.rsi(numpy.array(recent_closes), period=14)[-1]
+            else:
+                sma_20, sma_50, rsi_14 = None, None, None
+            cursor.execute("""
+                INSERT INTO stock_price_minute (stock_id, datetime, open, high, low, close, volume, sma_20, sma_50, rsi_14)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (stocks_dict[symbol], index.tz_localize(None).isoformat(), row['open'], row['high'], row['low'],
+                  row['close'], row['volume'], sma_20, sma_50, rsi_14))
+        print(f"== Fetching minute bars for {symbol} {start_date} - {end_date} ==")
+        start_date = start_date + timedelta(days=7)
+connection.commit()
