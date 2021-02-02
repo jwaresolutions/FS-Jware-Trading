@@ -13,12 +13,12 @@ today = date.today()
 end_date_range = today - timedelta(days=today.weekday())
 
 cursor.execute("""
-    select symbol, stock_strategy.stock_id
+    select DISTINCT symbol, stock_strategy.stock_id
     from stock
     join stock_strategy on stock_strategy.stock_id = stock.id
     join stock_price on stock.id = stock_price.stock_id
-    where date = ? and strategy_id = 1
-""", (end_date_range.isoformat(),))
+    WHERE strategy_id = 1
+""")
 
 stocks = cursor.fetchall()
 
