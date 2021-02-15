@@ -1,6 +1,6 @@
 # Custom #
-config.py
-DB/FS_Jware_Trading.db
+fs-jware-trading/API/config.py
+fs-jware-trading/DB/FS_Jware_Trading.db
 
 
 # Django #
