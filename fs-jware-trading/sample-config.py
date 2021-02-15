@@ -1,3 +1,4 @@
+# Plase the config file in the API folder
 # paper tradeing (dryrun) accounts
 endpoint_dryrun = 'https://paper-api.alpaca.markets'
 key_id_dryrun = 'KEY_ID_HERE'

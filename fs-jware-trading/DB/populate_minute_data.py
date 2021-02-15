@@ -1,4 +1,4 @@
-import alpaca_connection
+from API import alpaca_connection
 import sqlite3, numpy, tulipy
 from datetime import timedelta, date
 from strategies.Helpers import api_call

@@ -1,6 +1,6 @@
 import sqlite3, numpy, tulipy
 import alpaca_trade_api as tradeapi
-import alpaca_connection as ac
+from API import alpaca_connection as ac
 from datetime import date
 
 current_date = date.today().isoformat()

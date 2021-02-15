@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from datetime import date
 import alpaca_trade_api as tradeapi
-import alpaca_connection
+from API import alpaca_connection
 
 alpaca_connect = alpaca_connection.Alpaca_Connect()
 API_KEY = alpaca_connect.key_id

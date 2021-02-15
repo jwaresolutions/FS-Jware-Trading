@@ -1,36 +1,25 @@
-import sqlite3, alpaca_connection
-import alpaca_trade_api as tradeapi
+import sqlite3
+from API.alpaca_connection import Alpaca_Connect
+import helpers as helpers
 from datetime import date, datetime
 from pytz import timezone
-from Orders import order, send_message
+from strategies.Orders import order, send_message
 
 
-def get_date_isoformat(_date=None):
-    tz = timezone('America/New_York')
-    _date = datetime.strptime(f'{_date}', '%Y-%m-%d').astimezone(tz)
-    _date = _date.isoformat()
-    return _date
-
-
-print(datetime.now())
-current_date = date.today().isoformat()
+current_date = helpers.timenow_isoformat()
 strategy_name = 'opening_range_break_out_down'
-dst_check = get_date_isoformat('2020-11-07')[-6:]
+dst_check = helpers.get_dst_isoformat()
 
 messages = []
 
-alpaca_connect = alpaca_connection.Alpaca_Connect()
-API_KEY = alpaca_connect.key_id
-SECRET_KEY = alpaca_connect.secret_key
-API_URL = alpaca_connect.endpoint
-db_path = alpaca_connect.db_path
-neworder = False
-api = tradeapi.REST(API_KEY, SECRET_KEY, base_url=API_URL)
+ac = Alpaca_Connect()
 
-orders = api.list_orders(status='all', after=f"{current_date}T13:30:00Z")
+neworder = False
+
+orders = ac.api.list_orders(status='all', after=f"{current_date}T13:30:00Z")
 existing_order_symbols = [order.symbol for order in orders if order != 'canceled']
 print(f"EXISTING SYMBOLS {existing_order_symbols}")
-connection = sqlite3.connect(db_path)
+connection = sqlite3.connect(ac.db_path)
 connection.row_factory = sqlite3.Row
 
 cursor = connection.cursor()
@@ -72,7 +61,7 @@ start_minute_bar = f"{current_date} 09:30:00{dst_check}"
 end_minute_bar = f"{current_date} 16:00:00{dst_check}"
 
 for symbol in symbols:
-    minute_bars = api.polygon.historic_agg_v2(symbol, 1, 'minute', _from=current_date, to=current_date).df
+    minute_bars = ac.api.polygon.historic_agg_v2(symbol, 1, 'minute', _from=current_date, to=current_date).df
     minute_bars = minute_bars.resample('1min').ffill()
     print(symbol)
     opening_range_mask = (minute_bars.index >= start_minute_bar) & (minute_bars.index < end_minute_bar)

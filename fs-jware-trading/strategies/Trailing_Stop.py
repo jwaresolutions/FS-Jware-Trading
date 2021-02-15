@@ -1,4 +1,4 @@
-import alpaca_connection
+from API import alpaca_connection
 import alpaca_trade_api as tradeapi
 from Orders import send_message
 

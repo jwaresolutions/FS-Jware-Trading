@@ -1,4 +1,4 @@
-import alpaca_connection
+from API import alpaca_connection
 import backtrader, pandas, sqlite3
 from datetime import date, datetime, time, timedelta
 

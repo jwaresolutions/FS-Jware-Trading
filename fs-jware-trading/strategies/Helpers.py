@@ -1,5 +1,5 @@
 import math
-import alpaca_connection
+from API import alpaca_connection
 import alpaca_trade_api as tradeapi
 def calculate_quantity(price):
     quantity = math.floor(10000 / price)

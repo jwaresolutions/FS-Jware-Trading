@@ -1,5 +1,5 @@
 import sqlite3
-import alpaca_connection as ac
+from API import alpaca_connection as ac
 
 alpaca_connect = ac.Alpaca_Connect()
 

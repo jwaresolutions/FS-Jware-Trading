@@ -1,4 +1,5 @@
-import sqlite3, alpaca_connection, tulipy
+import sqlite3, tulipy
+from API import alpaca_connection
 import alpaca_trade_api as tradeapi
 from datetime import date, datetime
 from pytz import timezone

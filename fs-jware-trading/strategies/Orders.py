@@ -1,4 +1,5 @@
-import alpaca_connection, ssl, smtplib
+import ssl, smtplib
+from API import alpaca_connection
 from datetime import date
 import alpaca_trade_api as tradeapi
 
