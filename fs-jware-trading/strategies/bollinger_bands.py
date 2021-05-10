@@ -105,3 +105,5 @@ for symbol in symbols:
 
 if not messages:
     send_message(messages)
+
+

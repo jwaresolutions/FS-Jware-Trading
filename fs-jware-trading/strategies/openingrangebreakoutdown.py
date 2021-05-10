@@ -1,8 +1,6 @@
 import sqlite3
 from API.alpaca_connection import Alpaca_Connect
 import helpers as helpers
-from datetime import date, datetime
-from pytz import timezone
 from strategies.Orders import order, send_message
 
 
@@ -11,10 +9,8 @@ strategy_name = 'opening_range_break_out_down'
 dst_check = helpers.get_dst_isoformat()
 
 messages = []
-
-ac = Alpaca_Connect()
-
 neworder = False
+ac = Alpaca_Connect()
 
 orders = ac.api.list_orders(status='all', after=f"{current_date}T13:30:00Z")
 existing_order_symbols = [order.symbol for order in orders if order != 'canceled']
