@@ -117,4 +117,4 @@ for symbol in symbols:
 
 if not messages:
     print("NOT MESSAGES!!!")
-#     #send_message(messages)
+    send_message(messages)
