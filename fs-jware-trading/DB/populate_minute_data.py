@@ -48,11 +48,13 @@ for symbol in stocks_dict:
                 rsi_14 = tulipy.rsi(numpy.array(recent_closes), period=14)[-1]
             else:
                 sma_20, sma_50, rsi_14 = None, None, None
-            # cursor.execute("""
-            #     INSERT INTO stock_price_minute (stock_id, datetime, open, high, low, close, volume, sma_20, sma_50, rsi_14)
-            #     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            # """, (stocks_dict[symbol], index.tz_localize(None).isoformat(), row['open'], row['high'], row['low'],
-            #       row['close'], row['volume'], sma_20, sma_50, rsi_14))
+            cursor.execute("""
+                INSERT INTO stock_price_minute (stock_id, datetime, open, high, low, close, volume, sma_20, sma_50, rsi_14)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (stocks_dict[symbol], index.tz_localize(None).isoformat(), row['open'], row['high'], row['low'],
+                  row['close'], row['volume'], sma_20, sma_50, rsi_14))
+
         print(f"== COUNTER = {sleep_count} == Fetching minute bars for {symbol} {start_date} - {end_date} ==")
         start_date = start_date + timedelta(days=7)
-# connection.commit()
+
+connection.commit()

@@ -11,11 +11,12 @@ dst_check = helpers.get_dst_isoformat()
 messages = []
 neworder = False
 ac = Alpaca_Connect()
-
+path_to_db = f"../{ac.db_path}"
+print(f"{current_date}T13:30:00Z")
 orders = ac.api.list_orders(status='all', after=f"{current_date}T13:30:00Z")
 existing_order_symbols = [order.symbol for order in orders if order != 'canceled']
 print(f"EXISTING SYMBOLS {existing_order_symbols}")
-connection = sqlite3.connect(ac.db_path)
+connection = sqlite3.connect(path_to_db)
 connection.row_factory = sqlite3.Row
 
 cursor = connection.cursor()
@@ -33,10 +34,11 @@ cursor.execute("""
     join stock_price on stock.id = stock_price.stock_id
     where date = ? and strategy_id = ?
 """, (current_date, strategy_id))
-
+print(current_date)
 stocks = cursor.fetchall()
 
 symbols = [stock['symbol'] for stock in stocks]
+print(symbols)
 rsi_14 = [stock['rsi_14'] for stock in stocks]
 sma_20 = [stock['sma_20'] for stock in stocks]
 sma_50 = [stock['sma_50'] for stock in stocks]
@@ -113,4 +115,5 @@ for symbol in symbols:
         print(f"{symbol} did not match this strategy at {get_date_isoformat(current_date)}")
 
 if not messages:
-    send_message(messages)
+    print("NOT MESSAGES!!!")
+    #send_message(messages)

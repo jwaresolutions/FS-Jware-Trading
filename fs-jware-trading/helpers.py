@@ -11,7 +11,7 @@ def get_dst_isoformat(_date=date.today().isoformat()):
 
 
 def timenow_isoformat():
-    return datetime.now()
+    return datetime.now().date()
 
 
 def do_orders_exist():
