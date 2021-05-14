@@ -10,7 +10,7 @@ API_KEY = alpaca_connect.key_id
 SECRET_KEY = alpaca_connect.secret_key
 API_URL = alpaca_connect.endpoint
 
-connection = sqlite3.connect(alpaca_connect.db_path)
+connection = sqlite3.connect(f"../{alpaca_connect.db_path}")
 
 connection.row_factory = sqlite3.Row
 

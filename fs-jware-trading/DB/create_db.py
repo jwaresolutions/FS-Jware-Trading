@@ -5,7 +5,7 @@ alpaca_connect = ac.Alpaca_Connect()
 print(os.path.abspath(alpaca_connect.db_path))
 
 
-connection = sqlite3.connect(alpaca_connect.db_path)
+connection = sqlite3.connect(f"../{alpaca_connect.db_path}")
 
 cursor = connection.cursor()
 

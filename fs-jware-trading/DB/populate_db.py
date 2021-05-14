@@ -7,7 +7,7 @@ alpaca_connect = ac.Alpaca_Connect()
 API_KEY = alpaca_connect.key_id
 SECRET_KEY = alpaca_connect.secret_key
 API_URL = alpaca_connect.endpoint
-connection_path = alpaca_connect.db_path
+connection_path = f"../{alpaca_connect.db_path}"
 
 print(f"{API_KEY}, {SECRET_KEY}, {API_URL}")
 connection = sqlite3.connect(connection_path)
