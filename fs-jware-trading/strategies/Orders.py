@@ -1,13 +1,7 @@
 import ssl, smtplib
-from API import alpaca_connection
+import API.alpaca_connection as alpaca_connection
 from datetime import date
 import alpaca_trade_api as tradeapi
-import argparse
-
-parser = argparse.ArgumentParser(description='Execute trades programmatically')
-
-parser.add_argument('--symbol', dest='symbol', type=str, help='Symbol you want to trade')
-parser.add_argument('--direction', dest='Direction', type=str, help='buy or sell')
 
 
 alpaca_connect = alpaca_connection.Alpaca_Connect()
@@ -102,5 +96,3 @@ def fractional_order(symbol, spend):
         )
     )
 
-max_spend = process_limits('AAPL')
-fractional_order('AAPL', max_spend)
