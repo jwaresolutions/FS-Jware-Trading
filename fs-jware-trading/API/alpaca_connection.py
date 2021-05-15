@@ -1,6 +1,4 @@
-import sys, pytz
 import API.config as config
-from datetime import datetime
 import alpaca_trade_api as tradeapi
 
 class Alpaca_Connect:
