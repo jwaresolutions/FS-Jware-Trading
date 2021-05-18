@@ -1,4 +1,6 @@
 import ssl, smtplib
+from time import sleep
+
 import API.alpaca_connection as alpaca_connection
 from datetime import date
 import alpaca_trade_api as tradeapi
@@ -37,24 +39,24 @@ def process_limits(symbol):
     # not needed yet system will try to use fractional shares
 
     return max_bid_amount
-
-def order(symbol, side, limit_price, profit_price, stop_price):
-    print("order placed")
-    api.submit_order(
-        symbol=symbol,
-        side=side,
-        type='limit',
-        qty='1',
-        time_in_force='day',
-        order_class='bracket',
-        limit_price=limit_price,
-        take_profit=dict(
-            limit_price=profit_price,
-        ),
-        stop_loss=dict(
-            stop_price=stop_price,
-        )
-    )
+#
+# def order(symbol, side, limit_price, profit_price, stop_price):
+#     print("order placed")
+#     api.submit_order(
+#         symbol=symbol,
+#         side=side,
+#         type='limit',
+#         qty='1',
+#         time_in_force='day',
+#         order_class='bracket',
+#         limit_price=limit_price,
+#         take_profit=dict(
+#             limit_price=profit_price,
+#         ),
+#         stop_loss=dict(
+#             stop_price=stop_price,
+#         )
+#     )
 
 def send_message(messages):
     with smtplib.SMTP_SSL(alpaca_connect.email_host, alpaca_connect.email_port, context=context) as server:
@@ -82,17 +84,36 @@ def send_message(messages):
     #     )
     # )
 def fractional_order(symbol, spend):
+    order_complete = False
     quote = api.get_last_quote(symbol)
     ask_price = float(quote.askprice)
-    api.submit_order(
-        symbol=symbol,
-        side='buy',
-        type='trailing_stop',
-        qty=int(spend/ask_price),
-        trail_percent='15',
-        time_in_force='day',
-        stop_loss=dict(
-            stop_price=str(ask_price/0.20),
-        )
-    )
+    while True:
+        positions = api.list_positions()
+        if order_complete == False:
+            order_complete = True
 
+            api.submit_order(
+                symbol=symbol,
+                side='buy',
+                type='market',
+                qty=int(spend/ask_price),
+                time_in_force='day',
+                stop_loss=dict(
+                    stop_price=str(ask_price/0.20),
+                )
+            )
+            sleep(5)
+        else:
+            if positions[0].symbol == symbol:
+                api.submit_order(
+                    symbol=symbol,
+                    side='sell',
+                    type='market',
+                    qty=positions[0].qty,
+                    trail_percent='15',
+                    time_in_force='day',
+                    stop_loss=dict(
+                        stop_price=str(ask_price / 0.20),
+                    )
+                )
+                break
