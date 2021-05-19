@@ -54,7 +54,7 @@ def fractional_order(symbol, spend):
         positions = api.list_positions()
         if order_complete == False:
             order_complete = True
-
+            print(f"buying {spend} {ask_price}")
             api.submit_order(
                 symbol=symbol,
                 side='buy',
@@ -67,16 +67,19 @@ def fractional_order(symbol, spend):
             )
             sleep(5)
         else:
-            if positions[0].symbol == symbol:
-                api.submit_order(
-                    symbol=symbol,
-                    side='sell',
-                    type='market',
-                    qty=positions[0].qty,
-                    trail_percent='15',
-                    time_in_force='day',
-                    stop_loss=dict(
-                        stop_price=str(ask_price / 0.20),
+            try:
+                if positions[0].symbol == symbol:
+                    api.submit_order(
+                        symbol=symbol,
+                        side='sell',
+                        type='market',
+                        qty=positions[0].qty,
+                        trail_percent='15',
+                        time_in_force='day',
+                        stop_loss=dict(
+                            stop_price=str(ask_price / 0.20),
+                        )
                     )
-                )
-                break
+                    break
+            except:
+                pass
