@@ -1,0 +1,3 @@
+# DEPRECATED #
+
+# FS-Jware-Trading
